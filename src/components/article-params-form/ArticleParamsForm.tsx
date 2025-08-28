@@ -14,11 +14,11 @@ import {
 	OptionType,
 } from 'src/constants/articleProps';
 import { useEffect, useRef, useState } from 'react';
+import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
 
-// интерфейс пропсов(Описывает, какие данные и функции принимает форма: состояние открытия, обработчики, начальные параметры.)
+// интерфейс пропсов(Описывает, какие данные и функции принимает форма)
 
 interface ArticleParamsFormProps {
-	/*isOpen: boolean;*/
 	articleParams: {
 		fontFamily: OptionType;
 		fontSize: OptionType;
@@ -33,29 +33,25 @@ interface ArticleParamsFormProps {
 		contentWidth: OptionType;
 		backgroundColor: OptionType;
 	}) => void;
-	/*onArrowClick: () => void;
-	onClose: () => void;*/
 }
 
 //функциональный компонент ArticleParamsForm, который принимает пропсы, соответствующие интерфейсу ArticleParamsFormProps. Этот компонент отображает сайдбар с формой параметров статьи, включая кнопку-стрелку для открытия/закрытия и кнопки для сброса и применения настроек.
-export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
-	/*isOpen,
-	onArrowClick,
-	onClose,*/
+export const ArticleParamsForm = ({
 	articleParams,
 	setArticleParams,
-}) => {
+}: ArticleParamsFormProps) => {
 	// useState хук для создания и управления состоянием внутри.
 	// Создаем состояние isSidebarOpen(хранит информацию, открыт ли сайдбар) (булевое значение), setSidebarOpen — функция для изменения этого состояния.
 	// Начальное значение — false (сайдбар закрыт).
 	const [isSidebarOpen, setSidebarOpen] = useState(false);
 	const formRef = useRef<HTMLDivElement>(null);
-	//функция обработчик клика по стрелке,меняет состояние на противоположное
-	/*const handleArrowClick = () => setSidebarOpen((prev) => !prev);
-	//Функция-обработчик для закрытия сайдбара.
-	const handleCloseSidebar = () => setSidebarOpen(false);
-*/
 
+	// Используем  хук для обработки закрытия
+	useOutsideClickClose({
+		isOpen: isSidebarOpen,
+		onChange: setSidebarOpen,
+		rootRef: formRef,
+	});
 	// Состояния для каждого параметра формы
 
 	const [fontFamily, setFontFamily] = useState(
@@ -70,7 +66,7 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 		defaultArticleState.backgroundColor
 	);
 
-	//При открытии сайдбара, значения параметров формы сбрасываются к начальным
+	//Параметры при открытии сайдбара
 	useEffect(() => {
 		setFontFamily(articleParams.fontFamily);
 		setFontSize(articleParams.fontSize);
@@ -78,18 +74,17 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 		setContentWidth(articleParams.contentWidth);
 		setBackgroundColor(articleParams.backgroundColor);
 	}, [articleParams]);
-	//Обработчик отправки формы, предотвращает стандартное поведение, вызывает onApply с текущими параметрами и закрывает сайдбар.
+	//Обработчик отправки формы, предотвращает стандартное поведение, вызывает setArticleParams с текущими параметрами и закрывает сайдбар.
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		setArticleParams({
-			fontFamily: fontFamily,
-			fontSize: fontSize,
-			fontColor: fontColor,
-			contentWidth: contentWidth,
-			backgroundColor: backgroundColor,
+			fontFamily,
+			fontSize,
+			fontColor,
+			contentWidth,
+			backgroundColor,
 		});
 		setSidebarOpen(false);
-		/*onClose();*/
 	};
 	//Обработчик сброса формы, сбрасывает все параметры к начальным значениям, вызывает onApply с этими значениями и закрывает сайдбар.
 
@@ -100,29 +95,18 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 		setContentWidth(defaultArticleState.contentWidth);
 		setBackgroundColor(defaultArticleState.backgroundColor);
 		setSidebarOpen(false);
-		/*onClose();*/
 	};
-	// Управление событиями клика
+	// Обработчик закрытия по ESC
 	useEffect(() => {
-		if (!isSidebarOpen) return;
-
-		const handleClick = (event: MouseEvent) => {
-			if (formRef.current && !formRef.current.contains(event.target as Node)) {
-				setSidebarOpen(false);
-			}
-		};
-
 		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') {
+			if (event.key === 'Escape' && isSidebarOpen) {
 				setSidebarOpen(false);
 			}
 		};
-		window.addEventListener('mousedown', handleClick);
+
 		window.addEventListener('keydown', handleKeyDown);
 
-		// Убираем обработчики при размонтировании или изменении зависимостей
 		return () => {
-			window.removeEventListener('mousedown', handleClick);
 			window.removeEventListener('keydown', handleKeyDown);
 		};
 	}, [isSidebarOpen]);
@@ -132,9 +116,9 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 		<>
 			<ArrowButton
 				isOpen={isSidebarOpen}
-				onClick={() => setSidebarOpen(true)} /*onClick={onArrowClick}*/
+				onClick={() => setSidebarOpen(true)}
 			/>
-			{isSidebarOpen && ( //overlay, закрывает сайдбар по клику вне него.
+			{isSidebarOpen && (
 				<aside //основной контейнер сайдбара
 					ref={formRef}
 					className={clsx(styles.container, {
