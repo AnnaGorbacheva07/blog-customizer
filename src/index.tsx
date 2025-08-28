@@ -14,10 +14,10 @@ const root = createRoot(domNode);
 //функциональный компонент App. Этот код реализует логику открытия и закрытия сайдбара с настройками статьи, управляя состоянием через React. Состояние и обработчики передаются в дочерний компонент, который отвечает за отображение и взаимодействие с сайдбаром.
 
 const App = () => {
-	// useState хук для создания и управления состоянием внутри.
+	/*// useState хук для создания и управления состоянием внутри.
 	// Создаем состояние isSidebarOpen(хранит информацию, открыт ли сайдбар) (булевое значение), setSidebarOpen — функция для изменения этого состояния.
 	// Начальное значение — false (сайдбар закрыт).
-	const [isSidebarOpen, setSidebarOpen] = useState(false);
+	const [isSidebarOpen, setSidebarOpen] = useState(false);*/
 	// Состояние параметров статьи (articleParams хранит текущие параметры оформления статьи (шрифт, размер, цвет и т.д.),setArticleParams — функция для обновления этих параметров.
 	// Начальное значение — объект defaultArticleState, импортированный из констант.)
 	const [articleParams, setArticleParams] = useState({
@@ -27,24 +27,24 @@ const App = () => {
 		contentWidth: defaultArticleState.contentWidth,
 		backgroundColor: defaultArticleState.backgroundColor,
 	});
-	//функция обработчик клика по стрелке,меняет состояние на противоположное
-	const handleArrowClick = () => setSidebarOpen((prev) => !prev);
-	//Функция-обработчик для закрытия сайдбара.
-	const handleCloseSidebar = () => setSidebarOpen(false);
-
 	// Обновляет параметры статьи после нажатия "Применить" в форме.
 	const handleApply = (params: typeof articleParams) => {
 		setArticleParams(params);
 	};
+	/*//функция обработчик клика по стрелке,меняет состояние на противоположное
+	const handleArrowClick = () => setSidebarOpen((prev) => !prev);
+	//Функция-обработчик для закрытия сайдбара.
+	const handleCloseSidebar = () => setSidebarOpen(false);*/
 
 	// Передаются начальные параметры при открытии сайдбара
+	/*
 	const initialParams = {
 		fontFamily: defaultArticleState.fontFamilyOption,
 		fontSize: defaultArticleState.fontSizeOption,
 		fontColor: defaultArticleState.fontColor,
 		contentWidth: defaultArticleState.contentWidth,
 		backgroundColor: defaultArticleState.backgroundColor,
-	};
+	};*/
 	//Возвращает JSX-разметку.
 	return (
 		<main //основной контейнер страницы
@@ -59,11 +59,13 @@ const App = () => {
 				} as CSSProperties
 			}>
 			<ArticleParamsForm //вставляет компонент формы параметров статьи,получает все нужные пропсы для управления.
+				articleParams={articleParams}
+				setArticleParams={handleApply}
+				/*articleParams={articleParams}
+        setArticleParams={handleApply}
 				isOpen={isSidebarOpen}
 				onArrowClick={handleArrowClick}
-				onClose={handleCloseSidebar}
-				onApply={handleApply}
-				initialParams={initialParams}
+				onClose={handleCloseSidebar}*/
 			/>
 			<Article />
 		</main>
