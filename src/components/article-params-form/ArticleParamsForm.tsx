@@ -87,15 +87,26 @@ export const ArticleParamsForm = ({
 		setSidebarOpen(false);
 	};
 	//Обработчик сброса формы, сбрасывает все параметры к начальным значениям, вызывает onApply с этими значениями и закрывает сайдбар.
-
 	const handleReset = () => {
+		// Сбрасываем локальные состояния формы
 		setFontFamily(defaultArticleState.fontFamilyOption);
 		setFontSize(defaultArticleState.fontSizeOption);
 		setFontColor(defaultArticleState.fontColor);
 		setContentWidth(defaultArticleState.contentWidth);
 		setBackgroundColor(defaultArticleState.backgroundColor);
+
+		// Обновляем состояние статьи
+		setArticleParams({
+			fontFamily: defaultArticleState.fontFamilyOption,
+			fontSize: defaultArticleState.fontSizeOption,
+			fontColor: defaultArticleState.fontColor,
+			contentWidth: defaultArticleState.contentWidth,
+			backgroundColor: defaultArticleState.backgroundColor,
+		});
+
 		setSidebarOpen(false);
 	};
+
 	// Обработчик закрытия по ESC
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
