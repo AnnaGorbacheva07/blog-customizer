@@ -46,12 +46,13 @@ export const ArticleParamsForm = ({
 	const [isSidebarOpen, setSidebarOpen] = useState(false);
 	const formRef = useRef<HTMLDivElement>(null);
 
-	// Используем  хук для обработки закрытия
+	// Подключаем хук закрытия по клику вне сайдбара
 	useOutsideClickClose({
 		isOpen: isSidebarOpen,
 		onChange: setSidebarOpen,
 		rootRef: formRef,
 	});
+
 	// Состояния для каждого параметра формы
 
 	const [fontFamily, setFontFamily] = useState(
@@ -109,17 +110,19 @@ export const ArticleParamsForm = ({
 
 	// Обработчик закрытия по ESC
 	useEffect(() => {
-		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key === 'Escape' && isSidebarOpen) {
-				setSidebarOpen(false);
-			}
-		};
+		if (isSidebarOpen) {
+			const handleKeyDown = (event: KeyboardEvent) => {
+				if (event.key === 'Escape') {
+					setSidebarOpen(false);
+				}
+			};
 
-		window.addEventListener('keydown', handleKeyDown);
+			window.addEventListener('keydown', handleKeyDown);
 
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown);
-		};
+			return () => {
+				window.removeEventListener('keydown', handleKeyDown);
+			};
+		}
 	}, [isSidebarOpen]);
 
 	//возвращает JSX-разметку
